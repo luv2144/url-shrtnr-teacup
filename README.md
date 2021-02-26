@@ -1,17 +1,14 @@
-# {Team Name} - URL shortener {🧪}
-
-This is a template project for "Software testing" course labs. Use it to create your own repo and 
-fulfill/rewrite this document (at least, replace everything in `{...}`).
+# TeaCup - URL shortener 🍵
 
 ## Students group
 
-- {Surname Name (in Ukrainian)} {email}
-- ...
-- {Surname Name (in Ukrainian)} {email}
+- Молчанова Варвара kapibarabanka@gmail.com
+- Музика Олександр lunosgoode@gmail.com
+- Ткаченко Олександра mremarka314@gmail.com
 
 ## Design document
 
-The [design document]({Place actual link to the design document Google Docs file here}) that
+The [Tea design document] that
 describes architecture and implementation details of this project.
 
 ### System structure
@@ -62,7 +59,8 @@ plugin. We use Google rules (local copy `./config/checkstyle/checkstyle.xml`).
 ## Commit messages
 
 Write commit messages accordingly by [7 rules of good commit messages].
-  
+
+[Tea design document]: https://docs.google.com/document/d/1OPk6CApumRzTtpvQ1HzwoD5TqnTphwXwyOq6GzNVffE/edit?usp=sharing
 [JDK]: https://en.wikipedia.org/wiki/Java_Development_Kit
 [IntelliJ Idea Edu]: https://www.jetbrains.com/idea-edu/
 [sdkman]: https://sdkman.io/
