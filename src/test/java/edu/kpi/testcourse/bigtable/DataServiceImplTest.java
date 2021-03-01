@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class BigTableImplTest {
+class DataServiceImplTest {
 
   @Test
   void checkValueSaving() {
-    BigTableImpl bigTable = new BigTableImpl();
+    DataServiceImpl bigTable = new DataServiceImpl();
 
     bigTable.put("testKey", "testValue");
     String value = bigTable.get("testKey");
