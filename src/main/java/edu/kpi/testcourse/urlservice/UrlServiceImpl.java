@@ -1,12 +1,11 @@
-package edu.kpi.testcourse.logic;
+package edu.kpi.testcourse.urlservice;
 
-import edu.kpi.testcourse.bigtable.DataService;
-
+import edu.kpi.testcourse.dataservice.DataService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class UrlServiceImpl implements UrlService {
+class UrlServiceImpl implements UrlService {
 
   @Inject
   private final DataService table;

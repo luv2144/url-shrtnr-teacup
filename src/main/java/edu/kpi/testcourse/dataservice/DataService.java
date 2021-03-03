@@ -1,7 +1,10 @@
-package edu.kpi.testcourse.bigtable;
+package edu.kpi.testcourse.dataservice;
 
 import java.util.Map;
 
+/**
+ * Data Service manages file storage actions (e.g storing user data).
+ */
 public interface DataService {
   void addUser(String email, String password);
 

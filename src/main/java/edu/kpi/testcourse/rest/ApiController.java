@@ -1,14 +1,13 @@
 package edu.kpi.testcourse.rest;
 
 import edu.kpi.testcourse.Main;
-import edu.kpi.testcourse.logic.UrlService;
+import edu.kpi.testcourse.urlservice.UrlService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
-
 import javax.inject.Inject;
 
 /**
@@ -23,7 +22,7 @@ public class ApiController {
 
   record ExampleClass(String first, String second) {}
 
-  public ApiController(UrlService urlService){
+  public ApiController(UrlService urlService) {
     this.urlService = urlService;
   }
 
@@ -33,8 +32,12 @@ public class ApiController {
   }
 
   @Get(value = "/url/{alias}", produces = MediaType.TEXT_PLAIN, consumes = MediaType.TEXT_PLAIN)
-  public String getUrl(String alias) {return urlService.getUrl(alias);}
+  public String getUrl(String alias) {
+    return urlService.getUrl(alias);
+  }
 
   @Post(value = "/url/{alias}={url}", consumes = MediaType.TEXT_PLAIN)
-  public void addUrl(String alias, String url) {urlService.addUrl(alias, url);}
+  public void addUrl(String alias, String url) {
+    urlService.addUrl(alias, url);
+  }
 }

@@ -1,4 +1,4 @@
-package edu.kpi.testcourse.bigtable;
+package edu.kpi.testcourse.dataservice;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,8 +10,8 @@ class DataServiceImplTest {
   void checkValueSaving() {
     DataServiceImpl bigTable = new DataServiceImpl();
 
-    bigTable.put("testKey", "testValue");
-    String value = bigTable.get("testKey");
+    bigTable.addUrl("testKey", "testValue", "");
+    String value = bigTable.getUrl("testKey");
 
     assertThat(value).isEqualTo("testValue");
   }

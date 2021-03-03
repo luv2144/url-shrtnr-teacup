@@ -1,9 +1,9 @@
-package edu.kpi.testcourse.bigtable;
+package edu.kpi.testcourse.dataservice;
 
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javax.inject.Singleton;
 
 @Singleton
 class DataServiceImpl implements DataService {
