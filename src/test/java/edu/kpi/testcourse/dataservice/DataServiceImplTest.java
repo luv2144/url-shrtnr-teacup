@@ -8,12 +8,24 @@ class DataServiceImplTest {
 
   @Test
   void checkValueSaving() {
-    DataServiceImpl bigTable = new DataServiceImpl();
+    DataServiceImpl dataService = new DataServiceImpl();
 
-    bigTable.addUrl("testKey", "testValue", "");
-    String value = bigTable.getUrl("testKey");
+    var alias = new UrlAlias("testKey", "testValue", "testUser");
+    dataService.addUrlAlias(alias);
+    var result = dataService.getUrlAlias("testKey");
 
-    assertThat(value).isEqualTo("testValue");
+    assertThat(result.url()).isEqualTo("testValue");
+  }
+
+  @Test
+  void checkAliasNotFound() {
+    DataServiceImpl dataService = new DataServiceImpl();
+
+    var alias = new UrlAlias("testValue", "testKey", "testUser");
+    dataService.addUrlAlias(alias);
+    var result = dataService.getUrlAlias("wrongKey");
+
+    assertThat(result).isEqualTo(null);
   }
 
 }
