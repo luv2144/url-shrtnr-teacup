@@ -1,6 +1,7 @@
 package edu.kpi.testcourse.urlservice;
 
 import edu.kpi.testcourse.dataservice.DataService;
+import edu.kpi.testcourse.dataservice.UrlAlias;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -8,19 +9,20 @@ import javax.inject.Singleton;
 class UrlServiceImpl implements UrlService {
 
   @Inject
-  private final DataService table;
+  private final DataService dataService;
 
-  public UrlServiceImpl(DataService table) {
-    this.table = table;
+  public UrlServiceImpl(DataService dataService) {
+    this.dataService = dataService;
   }
 
   @Override
   public String getUrl(String alias) {
-    return table.getUrl(alias);
+    var urlAlias = dataService.getUrlAlias(alias);
+    return urlAlias == null ? null : urlAlias.url();
   }
 
   @Override
   public void addUrl(String alias, String url) {
-    table.addUrl(alias, url, "John Doe");
+    dataService.addUrlAlias(new UrlAlias(alias, url, "John Doe"));
   }
 }

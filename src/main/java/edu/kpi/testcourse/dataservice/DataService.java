@@ -1,6 +1,7 @@
 package edu.kpi.testcourse.dataservice;
 
-import java.util.Map;
+
+import java.util.List;
 
 /**
  * Data Service manages file storage actions (e.g storing user data).
@@ -10,9 +11,9 @@ public interface DataService {
 
   String getUserPassword(String email);
 
-  void addUrl(String alias, String url, String user);
+  void addUrlAlias(UrlAlias urlAlias);
 
-  String getUrl(String alias);
+  UrlAlias getUrlAlias(String alias);
 
-  Map<String, String> getUserUrls(String user);
+  List<UrlAlias> getUserAliases(String user);
 }

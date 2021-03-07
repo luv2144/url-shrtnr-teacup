@@ -1,13 +1,12 @@
 package edu.kpi.testcourse.dataservice;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Singleton;
 
 @Singleton
 class DataServiceImpl implements DataService {
-  private final Map<String, String> map = new HashMap<>();
+  private final List<UrlAlias> urlAliases = new ArrayList<>();
 
   @Override
   public void addUser(String email, String passwordHash) {
@@ -20,18 +19,23 @@ class DataServiceImpl implements DataService {
   }
 
   @Override
-  public void addUrl(String alias, String url, String user) {
-    map.put(alias, url);
+  public void addUrlAlias(UrlAlias urlAlias) {
+    urlAliases.add(urlAlias);
   }
 
   @Override
-  public String getUrl(String alias) {
-    var url = map.get(alias);
-    return Objects.requireNonNullElse(url, "default_url");
+  public UrlAlias getUrlAlias(String alias) {
+    for (var a : urlAliases) {
+      if (a.alias().equals(alias)) {
+        return a;
+      }
+    }
+
+    return null;
   }
 
   @Override
-  public Map<String, String> getUserUrls(String user) {
+  public List<UrlAlias> getUserAliases(String user) {
     return null;
   }
 }
