@@ -1,31 +1,30 @@
 package edu.kpi.testcourse.dataservice;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class DataServiceImplTest {
 
-  @Test
-  void checkValueSaving() {
-    DataServiceImpl dataService = new DataServiceImpl();
+  protected DataService dataService = new DataServiceImpl();
 
-    var alias = new UrlAlias("testKey", "testValue", "testUser");
-    dataService.addUrlAlias(alias);
-    var result = dataService.getUrlAlias("testKey");
-
-    assertThat(result.url()).isEqualTo("testValue");
-  }
+  protected final User testUser = new User("testEmail", "testPassword");
+  protected final UrlAlias testUrlAlias = new UrlAlias("testAlias", "testUrl", testUser.getEmail());
 
   @Test
-  void checkAliasNotFound() {
-    DataServiceImpl dataService = new DataServiceImpl();
-
-    var alias = new UrlAlias("testValue", "testKey", "testUser");
-    dataService.addUrlAlias(alias);
-    var result = dataService.getUrlAlias("wrongKey");
+  void testClear() {
+    dataService.addUser(testUser);
+    dataService.clear();
+    var result = dataService.getUser(testUser.getEmail());
 
     assertThat(result).isEqualTo(null);
   }
 
+  @AfterEach
+  void clear(){
+    dataService.clear();
+  }
 }
