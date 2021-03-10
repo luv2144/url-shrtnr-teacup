@@ -7,5 +7,7 @@ package edu.kpi.testcourse.urlservice;
 public interface UrlService {
   String  getUrl(String alias);
 
-  void addUrl(String alias, String url);
+  void addUrl(String alias, String url, String user);
+
+  String addUrl(String url, String user);
 }
