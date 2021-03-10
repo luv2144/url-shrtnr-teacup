@@ -1,43 +1,91 @@
 package edu.kpi.testcourse.rest;
 
-import edu.kpi.testcourse.Main;
 import edu.kpi.testcourse.urlservice.UrlService;
-import io.micronaut.http.MediaType;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
-import io.micronaut.security.annotation.Secured;
-import io.micronaut.security.rules.SecurityRule;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
 import javax.inject.Inject;
 
 /**
  * REST API controller that provides logic for Micronaut framework.
  */
-@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller
 public class ApiController {
+  private final String defaultUser = "John Doe";
 
   @Inject
   private final UrlService urlService;
-
-  record ExampleClass(String first, String second) {}
 
   public ApiController(UrlService urlService) {
     this.urlService = urlService;
   }
 
-  @Get(value = "/hello", produces = MediaType.APPLICATION_JSON)
-  public String hello() {
-    return Main.getGson().toJson(new ExampleClass("Hello", "world!"));
+  @Post(value = "/users/signup")
+  public HttpResponse<String> signUp(String email, String password) {
+    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
   }
 
-  @Get(value = "/url/{alias}", produces = MediaType.TEXT_PLAIN, consumes = MediaType.TEXT_PLAIN)
-  public String getUrl(String alias) {
-    return urlService.getUrl(alias);
+  @Post(value = "/users/signin")
+  public HttpResponse<String> signIp(String email, String password) {
+    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
   }
 
-  @Post(value = "/url/{alias}={url}", consumes = MediaType.TEXT_PLAIN)
-  public void addUrl(String alias, String url) {
-    urlService.addUrl(alias, url);
+  @Post(value = "/users/signup")
+  public HttpResponse<String> signOut() {
+    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
+  }
+
+  /**
+   * Creates an alias for the URL.
+   *
+   * @param url link which has to be shortened
+   * @param alias optional, desired alias for {@code url}
+   * @return generated or passed alias
+   */
+  @Post(value = "/urls/shorten")
+  public String addUrl(String url, Optional<String> alias) {
+    if (alias.isEmpty()) {
+      return urlService.addUrl(url, defaultUser);
+    }
+    urlService.addUrl(alias.get(), url, defaultUser);
+    return alias.get();
+  }
+
+  @Get(value = "/urls")
+  public HttpResponse<String> getUserUrls() {
+    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
+  }
+
+  /**
+   * Delete alias created by current user.
+   *
+   * @param alias alias to be deleted
+   */
+  @Delete(value = "urls/delete/{alias}")
+  public HttpResponse<String> deleteAlias(String alias) {
+    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
+  }
+
+  /**
+   * Redirects by a shortened URL.
+   *
+   * @param alias alias of the URL
+   */
+  @Get(value = "/r/{alias}")
+  public HttpResponse<String> redirect(String alias) {
+    var url = urlService.getUrl(alias);
+    URI location = null;
+    try {
+      location = new URI(url);
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+    return HttpResponse.redirect(location);
   }
 }

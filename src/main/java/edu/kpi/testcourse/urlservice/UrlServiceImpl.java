@@ -22,7 +22,15 @@ class UrlServiceImpl implements UrlService {
   }
 
   @Override
-  public void addUrl(String alias, String url) {
-    dataService.addUrlAlias(new UrlAlias(alias, url, "John Doe"));
+  public void addUrl(String alias, String url, String user) {
+    dataService.addUrlAlias(new UrlAlias(alias, url, user));
+  }
+
+  @Override
+  public String addUrl(String url, String user) {
+    var t = System.currentTimeMillis();
+    var alias = "test_alias_" + t;
+    dataService.addUrlAlias(new UrlAlias(alias, url, user));
+    return alias;
   }
 }
