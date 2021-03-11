@@ -1,5 +1,8 @@
 package edu.kpi.testcourse.rest;
 
+import edu.kpi.testcourse.auth.PasswordHash;
+import edu.kpi.testcourse.dataservice.DataService;
+import edu.kpi.testcourse.dataservice.User;
 import edu.kpi.testcourse.urlservice.UrlService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -7,9 +10,13 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
 import javax.inject.Inject;
 
@@ -23,23 +30,39 @@ public class ApiController {
   @Inject
   private final UrlService urlService;
 
-  public ApiController(UrlService urlService) {
+  @Inject
+  private final DataService dataService;
+
+  public ApiController(UrlService urlService, DataService dataService) {
     this.urlService = urlService;
+    this.dataService = dataService;
   }
 
+  /**
+   * Creates new user.
+   *
+   * @param username user username used as unique identifier
+   * @param password user password
+   * @return HttpResponse 200 OK or 422 with error message
+   */
+  @Secured(SecurityRule.IS_ANONYMOUS)
   @Post(value = "/users/signup")
-  public HttpResponse<String> signUp(String email, String password) {
-    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
-  }
+  public HttpResponse<String> signUp(String username, String password) {
+    if (dataService.getUser(username) != null) {
+      return HttpResponse.unprocessableEntity().body("User already exists!");
+    }
+    String passwordHash = null;
+    try {
+      passwordHash = PasswordHash.createHash(password);
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      e.printStackTrace();
+      return HttpResponse.serverError("Server error!");
+    }
 
-  @Post(value = "/users/signin")
-  public HttpResponse<String> signIp(String email, String password) {
-    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
-  }
+    User newUser = new User(username, passwordHash);
+    dataService.addUser(newUser);
 
-  @Post(value = "/users/signup")
-  public HttpResponse<String> signOut() {
-    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
+    return HttpResponse.ok();
   }
 
   /**
@@ -49,6 +72,7 @@ public class ApiController {
    * @param alias optional, desired alias for {@code url}
    * @return generated or passed alias
    */
+  @Secured(SecurityRule.IS_AUTHENTICATED)
   @Post(value = "/urls/shorten")
   public HttpResponse<String> addUrl(String url, Optional<String> alias) {
     if (alias.isEmpty()) {
@@ -63,6 +87,7 @@ public class ApiController {
     return HttpResponse.ok(alias.get());
   }
 
+  @Secured(SecurityRule.IS_AUTHENTICATED)
   @Get(value = "/urls")
   public HttpResponse<String> getUserUrls() {
     return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
@@ -73,6 +98,7 @@ public class ApiController {
    *
    * @param alias alias to be deleted
    */
+  @Secured(SecurityRule.IS_AUTHENTICATED)
   @Delete(value = "urls/delete/{alias}")
   public HttpResponse<String> deleteAlias(String alias) {
     return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
@@ -83,6 +109,7 @@ public class ApiController {
    *
    * @param alias alias of the URL
    */
+  @Secured(SecurityRule.IS_ANONYMOUS)
   @Get(value = "/r/{alias}")
   public HttpResponse<String> redirect(String alias) {
     var url = urlService.getUrl(alias);

@@ -1,5 +1,7 @@
-package edu.kpi.testcourse.rest;
+package edu.kpi.testcourse.auth;
 
+import edu.kpi.testcourse.dataservice.DataService;
+import edu.kpi.testcourse.dataservice.User;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.AuthenticationException;
@@ -11,6 +13,7 @@ import io.micronaut.security.authentication.UserDetails;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import java.util.ArrayList;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.reactivestreams.Publisher;
 
@@ -21,21 +24,30 @@ import org.reactivestreams.Publisher;
 @Singleton
 public class AuthenticationProviderUserPassword implements AuthenticationProvider {
 
+  @Inject
+  private final DataService dataService;
+
+  public AuthenticationProviderUserPassword(DataService dataService) {
+    this.dataService = dataService;
+  }
+
   @Override
   public Publisher<AuthenticationResponse> authenticate(
       @Nullable HttpRequest<?> httpRequest,
       AuthenticationRequest<?, ?> authenticationRequest
   ) {
-    // TODO Here you need to implement an actual authentication (ensure that the user is registered
-    //  and password is OK)
+    String username = (String) authenticationRequest.getIdentity();
+    User user = dataService.getUser((username));
+
     return Flowable.create(emitter -> {
-      if (authenticationRequest.getIdentity().equals("sherlock")
-          && authenticationRequest.getSecret().equals("password")) {
-        emitter
-          .onNext(new UserDetails((String) authenticationRequest.getIdentity(), new ArrayList<>()));
+      if (user != null && PasswordHash.validatePassword((String) authenticationRequest.getSecret(),
+            user.getPasswordHash())) {
+        emitter.onNext(new UserDetails(username, new ArrayList<>()));
         emitter.onComplete();
       } else {
-        emitter.onError(new AuthenticationException(new AuthenticationFailed()));
+        emitter.onError(new AuthenticationException(
+            new AuthenticationFailed("Wrong username or password!"))
+        );
       }
     }, BackpressureStrategy.ERROR);
   }

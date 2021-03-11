@@ -2,14 +2,30 @@ micronaut:
   application:
     name: test-course-template
   server:
+    port: 10001
     cors:
       enabled: true
   security:
-    enabled: false
-    authentication: bearer
+    enabled: true
+    authentication: cookie
+    intercept-url-map:
+      - pattern: /users/signin
+        http-method: POST
+        access:
+          - isAnonymous()
+    endpoints:
+      login:
+        enabled: true
+        path: /users/signin
+      logout:
+        enabled: true
+        path: /users/signout
     token:
       jwt:
         signatures:
           secret:
             generator:
               secret: supaDupaSecretThatNobodyWillKnow
+        generator:
+          access-token:
+            expiration: 1500
