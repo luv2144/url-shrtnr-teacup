@@ -41,9 +41,8 @@ class DataServiceImpl implements DataService {
   public boolean addUrlAlias(UrlAlias urlAlias) {
     var userDir = getUserDirectory(urlAlias.getUser());
     if (!userDir.exists()) {
-      //      throw new IllegalArgumentException(
-      //        String.format("Cannot add alias, user '%s' was not created", urlAlias.getUser()));
-      userDir.mkdir();
+      throw new IllegalArgumentException(
+        String.format("Cannot add alias, user '%s' was not created", urlAlias.getUser()));
     }
     var file = getAliasFile(urlAlias.getAlias(), urlAlias.getUser());
     return saveToNewFile(urlAlias, file);
@@ -59,9 +58,9 @@ class DataServiceImpl implements DataService {
   }
 
   @Override
-  public boolean deleteUrlAlias(String alias) {
-    var file = getAliasFile(alias);
-    if (file == null) {
+  public boolean deleteUrlAlias(String alias, String user) {
+    var file = getAliasFile(alias, user);
+    if (!file.exists()) {
       return false;
     }
     var urlAlias = readFromJsonFile(file, UrlAlias.class);
