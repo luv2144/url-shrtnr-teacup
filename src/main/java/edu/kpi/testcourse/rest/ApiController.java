@@ -1,11 +1,15 @@
 package edu.kpi.testcourse.rest;
 
+import edu.kpi.testcourse.Main;
+import edu.kpi.testcourse.auth.JwtHelper;
 import edu.kpi.testcourse.auth.PasswordHash;
 import edu.kpi.testcourse.dataservice.DataService;
 import edu.kpi.testcourse.dataservice.User;
 import edu.kpi.testcourse.urlservice.UrlService;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
@@ -26,7 +30,6 @@ import javax.inject.Inject;
  */
 @Controller
 public class ApiController {
-  private final String defaultUser = "John Doe";
 
   @Inject
   private final UrlService urlService;
@@ -71,50 +74,90 @@ public class ApiController {
    *
    * @param url link which has to be shortened
    * @param alias optional, desired alias for {@code url}
-   * @return generated or passed alias
+   * @return generated or passed alias. In case of error could return status code
+   *  <p>400 (Bad request) if {@code alias} isn't an alphanumeric string</p>
+   *  <p>406 (Not acceptable) if user with this {@code username} doesn't exist</p>
+   *  <p>409 (Conflict) if record with the same {@code alias} already exists</p>
    */
   @Secured(SecurityRule.IS_AUTHENTICATED)
   @Post(value = "/urls/shorten")
-  public HttpResponse<String> addUrl(String url, Optional<String> alias, Principal principal) {
-    String userName = principal.getName();
-    if (alias.isEmpty()) {
-      try {
-        return HttpResponse.ok(urlService.addUrl(url, userName));
-      } catch (IOException e) {
-        e.printStackTrace();
-        return HttpResponse.serverError();
+  public HttpResponse<String> addUrl(Principal principal, String url, Optional<String> alias) {
+    var username = principal.getName();
+    try {
+      if (alias.isEmpty()) {
+        return HttpResponse.ok(urlService.addUrl(url, username));
       }
-    }
-    urlService.addUrl(alias.get(), url, userName);
-    return HttpResponse.ok(alias.get());
-  }
 
-  @Secured(SecurityRule.IS_AUTHENTICATED)
-  @Get(value = "/urls")
-  public HttpResponse<String> getUserUrls() {
-    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
+      if (urlService.isUserAliasValid(alias.get())) {
+        if (urlService.addUrl(alias.get(), url, username)) {
+          return HttpResponse.ok(alias.get());
+        } else {
+          return HttpResponse.status(HttpStatus.CONFLICT,
+            "Record with the same alias already exists");
+        }
+      } else {
+        return HttpResponse.status(HttpStatus.BAD_REQUEST,
+          "Alias should be an alphanumeric string");
+      }
+
+    } catch (IllegalArgumentException e) {
+      return HttpResponse.status(HttpStatus.NOT_ACCEPTABLE,
+        String.format("User %s doesn't exist, cannot create alias.", username));
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      return HttpResponse.serverError();
+    }
   }
 
   /**
-   * Delete alias created by current user.
+   * Returns all aliases, created by current user.
    *
-   * @param alias alias to be deleted
+   * @return json list of created aliases
+   *     (model is {@link edu.kpi.testcourse.urlservice.AliasInfo}).
+   */
+  @Secured(SecurityRule.IS_AUTHENTICATED)
+  @Get(value = "/urls", produces = MediaType.APPLICATION_JSON)
+  public HttpResponse<String> getUserUrls(Principal principal) {
+    var username = principal.getName();
+    var result = urlService.getUserAliases(username);
+    return HttpResponse.ok(Main.getGson().toJson(result));
+  }
+
+  /**
+   * Deletes specified alias, created by current user.
+   *
+   * @param alias to be deleted
+   * @return 200 (Ok) status code. In case of error could return status code
+   *  <p>400 (Bad request) if {@code alias} doesn't exist or wasn't created by current user</p>
    */
   @Secured(SecurityRule.IS_AUTHENTICATED)
   @Delete(value = "urls/delete/{alias}")
-  public HttpResponse<String> deleteAlias(String alias) {
-    return HttpResponse.status(HttpStatus.NOT_IMPLEMENTED);
+  public HttpResponse<String> deleteAlias(Principal principal, String alias) {
+    var username = principal.getName();
+    if (urlService.deleteAlias(alias, username)) {
+      return HttpResponse.ok();
+    } else {
+      return HttpResponse.badRequest(
+        String.format("Alias %s doesn't exist or wasn't created by current user.", alias));
+    }
   }
 
   /**
    * Redirects by a shortened URL.
    *
-   * @param alias alias of the URL
+   * @return 301 (Moved permanently) - successful redirection status code.
+   *     In case of error could return status code
+   *  <p>400 (Bad request) if {@code alias} doesn't exist</p>
    */
   @Secured(SecurityRule.IS_ANONYMOUS)
   @Get(value = "/r/{alias}")
   public HttpResponse<String> redirect(String alias) {
     var url = urlService.getUrl(alias);
+    if (url == null) {
+      return HttpResponse.badRequest(
+        String.format("Alias %s doesn't exist.", alias));
+    }
     URI location = null;
     try {
       location = new URI(url);
