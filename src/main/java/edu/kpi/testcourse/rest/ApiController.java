@@ -38,6 +38,12 @@ public class ApiController {
     this.dataService = dataService;
   }
 
+  @Secured(SecurityRule.IS_ANONYMOUS)
+  @Get(value = "/")
+  public HttpResponse<String> index() {
+    return HttpResponse.ok();
+  }
+
   /**
    * Creates new user.
    *
