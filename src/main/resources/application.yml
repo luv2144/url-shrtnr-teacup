@@ -6,13 +6,12 @@ micronaut:
     cors:
       enabled: true
   security:
+    redirect:
+      login-success: /login_success
+      login-failure: /login_failure
+      logout: /logout
     enabled: true
     authentication: cookie
-    intercept-url-map:
-      - pattern: /users/signin
-        http-method: POST
-        access:
-          - isAnonymous()
     endpoints:
       login:
         enabled: true

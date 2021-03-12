@@ -6,6 +6,7 @@ import edu.kpi.testcourse.dataservice.User;
 import edu.kpi.testcourse.urlservice.UrlService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
@@ -39,9 +40,21 @@ public class ApiController {
   }
 
   @Secured(SecurityRule.IS_ANONYMOUS)
-  @Get(value = "/")
-  public HttpResponse<String> index() {
-    return HttpResponse.ok();
+  @Get(value = "/login_success")
+  public HttpResponse<String> loginSuccess() {
+    return HttpResponse.ok("Success");
+  }
+
+  @Secured(SecurityRule.IS_ANONYMOUS)
+  @Get(value = "/login_failure")
+  public HttpResponse<String> loginFailure() {
+    return HttpResponse.status(HttpStatus.UNAUTHORIZED, "Authorization failed");
+  }
+
+  @Secured(SecurityRule.IS_ANONYMOUS)
+  @Get(value = "/logout")
+  public HttpResponse<String> logout() {
+    return HttpResponse.ok("Logged out!");
   }
 
   /**
