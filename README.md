@@ -22,10 +22,8 @@ implementation harness.
 
 There are four modules:
 - `auth` **authentication module** - creates new users, authenticates existing ones
-- `bigtable` - **big table** - a key-value persistence storage (please, pay attention that you should implement it by
-  yourself. It means that it is not allowed to use data bases, another key-value storages 
-  implementation, etc)
-- `logic` - **business logic** - logic of URL shortening
+- `dataservice` - **data service** - a key-value persistence storage. There's a core folder `.data`. For each user a new folder created which contains file `<email>.usr` with json with emai and hash-password. Also in the core folder there's a file `ids.json` which contains 2 fields: `next id` and `available ids`. Files with alias is stored in users' folders in order to simplify searching through users' urls. 
+- `urlservice` - **business logic** - logic of URL shortening
 - `rest` - **REST API** - a module that provides a REST API. [Micronaut] framework is already added
   to project dependencies. It simplifies creation of REST API and provides built-in JWT 
   authentication.
