@@ -7,7 +7,7 @@ import edu.kpi.testcourse.dataservice.User;
 import edu.kpi.testcourse.urlservice.UrlService;
 import org.junit.jupiter.api.Test;
 
-public class shouldCreateLink {
+public class ShouldCreateLink {
 
   /**
    * Має перевірити, чи буде створене скорочене посилання для юзера.
