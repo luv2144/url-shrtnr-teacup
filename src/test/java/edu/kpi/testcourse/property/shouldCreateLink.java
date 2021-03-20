@@ -2,20 +2,21 @@ package edu.kpi.testcourse.property;
 
 import static org.quicktheories.QuickTheory.qt;
 import static org.quicktheories.generators.SourceDSL.strings;
-
 import edu.kpi.testcourse.dataservice.DataService;
 import edu.kpi.testcourse.dataservice.User;
 import edu.kpi.testcourse.urlservice.UrlService;
 import org.junit.jupiter.api.Test;
 
 public class shouldCreateLink {
+
   /**
    * Має перевірити, чи буде створене скорочене посилання для юзера.
    */
   DataService dataService;
   UrlService urlService;
+
   @Test
-  void shouldCreateLink_propertyBased(){
+  void shouldCreateLink_propertyBased() {
     qt()
       .forAll(
         strings().basicLatinAlphabet().ofLengthBetween(5, 10),
@@ -35,7 +36,7 @@ public class shouldCreateLink {
     });
   }
 
-  private String normalizeEmail(String email){
+  private String normalizeEmail(String email) {
     return email + "@mail.com";
   }
 }
