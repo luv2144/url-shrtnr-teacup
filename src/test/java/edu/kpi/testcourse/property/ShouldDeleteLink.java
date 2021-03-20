@@ -18,7 +18,7 @@ public class ShouldDeleteLink {
   UrlService urlService;
 
   @Test
-  void shouldCreateLink_propertyBased() {
+  void shouldDeleteLink_propertyBased() {
     qt()
       .forAll(
         strings().basicLatinAlphabet().ofLengthBetween(5, 10),
