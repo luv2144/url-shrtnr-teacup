@@ -1,4 +1,4 @@
-package edu.kpi.testcourse;
+package edu.kpi.testcourse.property;
 
 import static org.quicktheories.QuickTheory.qt;
 import static org.quicktheories.generators.SourceDSL.strings;
