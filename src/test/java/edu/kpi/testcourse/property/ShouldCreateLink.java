@@ -20,6 +20,7 @@ public class ShouldCreateLink {
   void shouldCreateLink_propertyBased() {
     dataService.addUser(testUser);
     qt()
+      .withExamples(10)
       .forAll(
         strings().basicLatinAlphabet().ofLengthBetween(1, 10)
       ).check((url) -> {
