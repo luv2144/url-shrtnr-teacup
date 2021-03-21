@@ -3,8 +3,9 @@ package edu.kpi.testcourse.property;
 import static org.quicktheories.QuickTheory.qt;
 import static org.quicktheories.generators.SourceDSL.strings;
 import edu.kpi.testcourse.dataservice.DataService;
+import edu.kpi.testcourse.dataservice.DataServiceImpl;
+import edu.kpi.testcourse.dataservice.UrlAlias;
 import edu.kpi.testcourse.dataservice.User;
-import edu.kpi.testcourse.urlservice.UrlService;
 import org.junit.jupiter.api.Test;
 
 public class ShouldCreateLink {
@@ -12,31 +13,24 @@ public class ShouldCreateLink {
   /**
    * Має перевірити, чи буде створене скорочене посилання для юзера.
    */
-  DataService dataService;
-  UrlService urlService;
+  DataService dataService = new DataServiceImpl();
+  User testUser = new User("testUsername", "testPassword");
 
   @Test
   void shouldCreateLink_propertyBased() {
+    dataService.addUser(testUser);
     qt()
       .forAll(
-        strings().basicLatinAlphabet().ofLengthBetween(5, 10),
-        strings().basicLatinAlphabet().ofLengthBetween(8, 15),
-        strings().basicLatinAlphabet().ofLengthBetween(10, 30)
-      ).check((email, password, url) -> {
-      email = normalizeEmail(email);
-      User user = new User(email, password);
-
+        strings().basicLatinAlphabet().ofLengthBetween(1, 10)
+      ).check((url) -> {
       try {
-        dataService.addUser(user);
-        urlService.addUrl(url, user.getEmail());
-      } catch (Exception e) {
+        UrlAlias testUrlAlias = new UrlAlias(url, url, testUser.getEmail());
+        dataService.addUrlAlias(testUrlAlias);
+      } catch (NullPointerException e) {
         return false;
       }
-      return urlService.getUserAliases(user.getEmail()) != null;
+      return dataService.getUserAliases(testUser.getEmail()) != null;
     });
   }
 
-  private String normalizeEmail(String email) {
-    return email + "@mail.com";
-  }
 }

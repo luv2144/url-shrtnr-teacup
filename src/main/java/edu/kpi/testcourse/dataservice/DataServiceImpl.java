@@ -10,7 +10,7 @@ import java.util.List;
 import javax.inject.Singleton;
 
 @Singleton
-class DataServiceImpl implements DataService {
+public class DataServiceImpl implements DataService {
   private final String jsonFileExtension = ".json";
   private final String userFileExtension = ".usr";
   private final String rootPath = "./.data";
