@@ -2,7 +2,6 @@ package edu.kpi.testcourse.property;
 
 import static org.quicktheories.QuickTheory.qt;
 import static org.quicktheories.generators.SourceDSL.strings;
-
 import edu.kpi.testcourse.dataservice.DataService;
 import edu.kpi.testcourse.dataservice.DataServiceImpl;
 import edu.kpi.testcourse.dataservice.UrlAlias;
